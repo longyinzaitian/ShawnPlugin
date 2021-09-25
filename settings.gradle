@@ -2,3 +2,4 @@ rootProject.name = "ShawnAndroidPlugin"
 include ':app'
 include ':pluginapp'
 include ':pluginLib'
+include ':common'

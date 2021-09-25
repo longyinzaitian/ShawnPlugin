@@ -9,6 +9,8 @@ import com.shawn.plugin.lib.util.LogUtil;
 
 public class ProxyHandlerCallback implements Handler.Callback {
     private static final String TAG = "ProxyHandlerCallback";
+
+
     private final Handler mHandler;
 
     public ProxyHandlerCallback(Handler handler) {
@@ -18,6 +20,9 @@ public class ProxyHandlerCallback implements Handler.Callback {
     @Override
     public boolean handleMessage(@NonNull Message msg) {
         LogUtil.i(TAG, "handler message -> " + msg);
+        switch (msg.what) {
+
+        }
         if (mHandler != null) {
             mHandler.handleMessage(msg);
         }

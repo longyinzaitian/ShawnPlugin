@@ -8,4 +8,8 @@ public class PluginConfig {
     public static void setHostApplication(Context hostApplication) {
         PluginConfig.hostApplication = hostApplication;
     }
+
+    public static Context getHostContext() {
+        return hostApplication;
+    }
 }

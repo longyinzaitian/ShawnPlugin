@@ -16,7 +16,7 @@ public class ProxyIActivityManager implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        LogUtil.i(TAG, "invoke method -> method:" + method);
+        LogUtil.i(TAG, "invoke method -> method:" + method.getName());
         return method.invoke(mOrigin, args);
     }
 

@@ -1,15 +1,26 @@
 package com.shawn.plugin.main
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
+import com.shawn.plugin.common.ui.ToastUtil
+import com.shawn.plugin.lib.core.PluginCore
+import com.shawn.plugin.lib.hook.HookPackageManager
+import com.shawn.plugin.lib.hook.core.HookCoreActivityThread
+import com.shawn.plugin.lib.util.FileUtil
 import com.shawn.plugin.main.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        FileUtil.extractAssets(MainActivity@ this, "plugin1.apk")
+
+        ToastUtil.showMsg(MainActivity@ this, "Asset Finish")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,25 +30,32 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-    }
+//        binding.fab.setOnClickListener {
+//            ThreadManager.getInstance().postOnUi {
+//                FileUtil.extractAssets(MainActivity@ this, "plugin1.apk")
+//                ThreadManager.getInstance().postOnUi {
+//                    HookPackageManager.hookLoadedApkInActivityThread(getFileStreamPath("plugin1.apk"))
+////                    PluginCore.init(this)
+//                    ToastUtil.showMsg(MainActivity@ this, "Asset Finish")
+//                }
+//            }
+//        }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+        binding.include.buttonFirst.setOnClickListener {
+//            startActivity(Intent(this, SecondActivity::class.java))
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+            HookPackageManager.hookLoadedApkInActivityThread(getFileStreamPath("plugin1.apk"))
+            PluginCore.init(this)
+            try {
+                val t = Intent()
+                t.component = ComponentName(
+                    "com.shawn.plugin.app",
+                    "com.shawn.plugin.app.MainActivity"
+                )
+                startActivity(t)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
     }
 }
