@@ -107,6 +107,35 @@ public class RefInvoke {
         return null;
     }
 
+    //多个参数
+    public static Object invokeInstanceMethod(String clazz, Object obj, String methodName, Class[] pareTyples, Object[] pareVaules) {
+        if (obj == null)
+            return null;
+
+        try {
+            //调用一个private方法
+            Class cl = Class.forName(clazz);
+            Method method = cl.getDeclaredMethod(methodName, pareTyples); //在指定类中获取指定的方法
+            method.setAccessible(true);
+            return method.invoke(obj, pareVaules);
+
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     //一个参数
     public static Object invokeInstanceMethod(Object obj, String methodName, Class pareTyple, Object pareVaule) {
         Class[] pareTyples = {pareTyple};

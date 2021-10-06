@@ -4,6 +4,7 @@ import android.content.Context;
 
 public class PluginConfig {
     private static Context hostApplication;
+    public static String pluginPath;
 
     public static void setHostApplication(Context hostApplication) {
         PluginConfig.hostApplication = hostApplication;

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FileUtil {
+    private static final String TAG = "FileUtil";
     /**
      * 把Assets里面得文件复制到 /data/data/files 目录下
      */
@@ -33,6 +34,8 @@ public class FileUtil {
                 fos.write(buffer, 0, count);
             }
             fos.flush();
+            PluginConfig.pluginPath = extractFile.getAbsolutePath();
+            LogUtil.i(TAG, "plugin path:" + PluginConfig.pluginPath);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

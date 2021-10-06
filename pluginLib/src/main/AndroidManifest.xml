@@ -3,7 +3,13 @@
     package="com.shawn.plugin.lib">
 
     <application>
-        <activity android:name="com.shawn.plugin.lib.stub.StubActivity" />
+        <activity
+            android:name="com.shawn.plugin.lib.stub.StubActivity"
+             />
+        <provider
+            android:name="com.shawn.plugin.lib.manager.PluginManagerProvider"
+            android:authorities="com.shawn.plugin.lib.provider"
+             />
     </application>
 
 </manifest>

@@ -9,8 +9,9 @@ class ShawnApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
+        getSystemService(Context.ACTIVITY_SERVICE)
         PluginConfig.setHostApplication(this)
-//        PluginCore.init(this)
+        PluginCore.init(this)
     }
 
     override fun onCreate() {

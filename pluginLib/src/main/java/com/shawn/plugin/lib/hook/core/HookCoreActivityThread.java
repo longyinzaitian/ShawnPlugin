@@ -9,7 +9,6 @@ import com.shawn.plugin.lib.hook.HookHandlerCallback;
 import com.shawn.plugin.lib.proxy.ProxyHandlerCallback;
 import com.shawn.plugin.lib.proxy.ProxyIPackageManager;
 import com.shawn.plugin.lib.proxy.ProxyInstrumentation;
-import com.shawn.plugin.lib.reflect.RefInvoke;
 
 import java.lang.reflect.Proxy;
 
@@ -33,8 +32,6 @@ public class HookCoreActivityThread {
             if (instrumentation instanceof Instrumentation) {
                 ProxyInstrumentation proxyInstrumentation = new ProxyInstrumentation((Instrumentation) instrumentation);
                 hookActivityThread.setInstrumentation(activityThread, proxyInstrumentation);
-
-                RefInvoke.setFieldObject("android.app.Activity", context, "mInstrumentation", proxyInstrumentation);
             }
 
             Object packageManager = hookActivityThread.getPackageManager();

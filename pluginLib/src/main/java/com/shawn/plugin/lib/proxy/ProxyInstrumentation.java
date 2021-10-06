@@ -8,18 +8,29 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.os.UserHandle;
 
+import com.shawn.plugin.lib.core.PluginConfig;
+import com.shawn.plugin.lib.hook.HookContextThemeWrapper;
+import com.shawn.plugin.lib.hook.HookContextWrapper;
+import com.shawn.plugin.lib.hook.HookPackageManager;
+import com.shawn.plugin.lib.loader.PluginClassLoader;
+import com.shawn.plugin.lib.plugin.PluginContext;
 import com.shawn.plugin.lib.reflect.RefInvoke;
 import com.shawn.plugin.lib.util.LogUtil;
+import com.shawn.plugin.lib.util.ProcessUtil;
 
 public class ProxyInstrumentation extends Instrumentation {
     private static final String TAG = "ProxyInstrumentation";
 
     private final Instrumentation mOrigin;
+
     public ProxyInstrumentation(Instrumentation origin) {
         mOrigin = origin;
     }
@@ -36,7 +47,14 @@ public class ProxyInstrumentation extends Instrumentation {
         LogUtil.i(TAG, "origin class:" + originClass);
         if ("1".equals(intent.getStringExtra("_origin"))) {
             intent.setPackage("com.shawn.plugin.app");
+            className = "com.shawn.plugin.app.MainActivity";
             intent.setClassName("com.shawn.plugin.app", "com.shawn.plugin.app.MainActivity");
+            LogUtil.i(TAG, "HookPackageManager.sLoadedApk->" + HookPackageManager.sLoadedApk.toString());
+            Object loadedApk = HookPackageManager.sLoadedApk.get("com.shawn.plugin.app");
+            LogUtil.i(TAG, "loadedApk:" + loadedApk);
+            cl = (PluginClassLoader) RefInvoke.getFieldObject("android.app.LoadedApk", loadedApk, "mClassLoader");
+            intent.setExtrasClassLoader(cl);
+            return mOrigin.newActivity(cl, className, intent);
         }
         LogUtil.i(TAG, "newActivity -> cl:" + cl);
         return mOrigin.newActivity(cl, className, intent);
@@ -75,5 +93,44 @@ public class ProxyInstrumentation extends Instrumentation {
                 new Class[]{Context.class, IBinder.class, IBinder.class,
                         Activity.class, Intent.class, int.class, Bundle.class, UserHandle.class},
                 new Object[]{who, contextThread, token, target, intent, requestCode, options, user});
+    }
+
+    @Override
+    public void callActivityOnCreate(Activity activity, Bundle icicle) {
+        LogUtil.i(TAG, "callActivityOnCreate act:" + activity);
+        if (ProcessUtil.isPluginProcess()) {
+            try {
+                AssetManager assetManager = AssetManager.class.newInstance();
+                RefInvoke.invokeInstanceMethod("android.content.res.AssetManager",
+                        assetManager, "addAssetPath",
+                        new Class[]{String.class},
+                        new Object[]{activity.getFileStreamPath("plugin1.apk").getAbsolutePath()});
+
+                Resources resources = new Resources(assetManager,
+                        PluginConfig.getHostContext().getResources().getDisplayMetrics(),
+                        PluginConfig.getHostContext().getResources().getConfiguration());
+
+                PluginContext pluginContext = new PluginContext(activity.getApplicationContext(), resources);
+
+                HookContextWrapper hookContextWrapper = new HookContextWrapper();
+                hookContextWrapper.setBase(activity, null);
+
+                HookContextThemeWrapper hookContextThemeWrapper = new HookContextThemeWrapper();
+                hookContextThemeWrapper.attachBaseContext(activity, pluginContext);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        RefInvoke.invokeInstanceMethod(mOrigin, "callActivityOnCreate",
+                new Class[]{Activity.class, Bundle.class},
+                new Object[]{activity, icicle});
+    }
+
+    @Override
+    public void callActivityOnCreate(Activity activity, Bundle icicle, PersistableBundle persistentState) {
+        LogUtil.i(TAG, "callActivityOnCreate act:" + activity + ",,");
+        RefInvoke.invokeInstanceMethod(mOrigin, "callActivityOnCreate",
+                new Class[]{Activity.class, Bundle.class, PersistableBundle.class},
+                new Object[]{activity, icicle, persistentState});
     }
 }

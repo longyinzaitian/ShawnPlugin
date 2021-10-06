@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(Intent(this, SecondActivity::class.java))
 
             HookPackageManager.hookLoadedApkInActivityThread(getFileStreamPath("plugin1.apk"))
-            PluginCore.init(this)
+//            PluginCore.init(this)
             try {
                 val t = Intent()
                 t.component = ComponentName(
