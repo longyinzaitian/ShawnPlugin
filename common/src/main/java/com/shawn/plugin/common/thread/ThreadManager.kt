@@ -22,13 +22,13 @@ class ThreadManager {
     }
 
     private val threadExecute: ThreadPoolExecutor = ThreadPoolExecutor(
-        4,
-        16,
+        Runtime.getRuntime().availableProcessors(),
+        Runtime.getRuntime().availableProcessors() * 2 + 1,
         0,
         TimeUnit.MILLISECONDS,
         LinkedBlockingQueue(125),
         ThreadFactory {
-            Thread(it)
+            Thread(it, "ThreadManager")
         })
 
     private val mHandler = Handler(Looper.getMainLooper())
