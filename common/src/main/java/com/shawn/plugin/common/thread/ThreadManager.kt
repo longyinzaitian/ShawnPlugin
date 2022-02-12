@@ -26,7 +26,7 @@ class ThreadManager {
         Runtime.getRuntime().availableProcessors() * 2 + 1,
         0,
         TimeUnit.MILLISECONDS,
-        LinkedBlockingQueue(125),
+        LinkedBlockingQueue(128),
         ThreadFactory {
             Thread(it, "ThreadManager")
         })
@@ -35,7 +35,11 @@ class ThreadManager {
 
     fun postOnUi(runnable: Runnable?) {
         runnable?.let {
-            mHandler.post(it)
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                it.run()
+            } else {
+                mHandler.post(it)
+            }
         }
     }
 
