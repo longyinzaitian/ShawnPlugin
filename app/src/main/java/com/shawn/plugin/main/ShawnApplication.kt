@@ -11,6 +11,7 @@ class ShawnApplication : Application() {
         super.attachBaseContext(base)
         getSystemService(Context.ACTIVITY_SERVICE)
         PluginConfig.setHostApplication(this)
+        PluginConfig.setDebug(true)
         PluginCore.init(this)
     }
 

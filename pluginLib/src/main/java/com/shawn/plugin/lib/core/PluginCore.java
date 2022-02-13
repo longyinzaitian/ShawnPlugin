@@ -5,6 +5,7 @@ import android.os.Build;
 
 import com.shawn.plugin.lib.hook.core.HookCoreActivityManager;
 import com.shawn.plugin.lib.hook.core.HookCoreActivityThread;
+import com.shawn.plugin.lib.manager.PluginManager;
 import com.shawn.plugin.lib.reflect.FreeReflection;
 import com.shawn.plugin.lib.util.LogUtil;
 
@@ -18,5 +19,6 @@ public class PluginCore {
         }
         new HookCoreActivityManager().hook();
         new HookCoreActivityThread().hook(application);
+        PluginManager.INSTANCE.init();
     }
 }

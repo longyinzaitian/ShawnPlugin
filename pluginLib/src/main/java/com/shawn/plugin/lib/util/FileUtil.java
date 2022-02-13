@@ -13,6 +13,7 @@ import java.io.InputStream;
 
 public class FileUtil {
     private static final String TAG = "FileUtil";
+
     /**
      * 把Assets里面得文件复制到 /data/data/files 目录下
      */
@@ -45,6 +46,16 @@ public class FileUtil {
     }
 
     /**
+     * 获取下载目录
+     */
+    public static File getDownloadDirFile() {
+        String downloadStr = PluginConfig.getHostContext().getFilesDir().getAbsolutePath() + File.separator + "PluginDownload";
+        File downloadFile = new File(downloadStr);
+        enforceDirExists(downloadFile);
+        return downloadFile;
+    }
+
+    /**
      * 待加载插件经过opt优化之后存放odex得路径
      */
     public static File getPluginOptDexDir(String packageName) {
@@ -60,8 +71,8 @@ public class FileUtil {
 
     private static File sBaseDir;
 
-    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/
-    private static File getPluginBaseDir(String packageName) {
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>
+    public static File getPluginBaseDir(String packageName) {
         if (sBaseDir == null) {
             sBaseDir = PluginConfig.getHostContext().getFileStreamPath("plugin");
             enforceDirExists(sBaseDir);
@@ -69,7 +80,38 @@ public class FileUtil {
         return enforceDirExists(new File(sBaseDir, packageName));
     }
 
-    private static synchronized File enforceDirExists(File sBaseDir) {
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/data/
+    public static File getPluginDataDir(String packageName) {
+        return enforceDirExists(new File(getPluginBaseDir(packageName), "data"));
+    }
+
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/version-000/
+    public static File getPluginDirVersion(String packageName, long versionCode) {
+        return enforceDirExists(new File(getPluginBaseDir(packageName), "version-" + versionCode));
+    }
+
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/version-code/apk/
+    public static File getPluginSourceDir(String packageName, long versionCode) {
+        return enforceDirExists(new File(getPluginDirVersion(packageName, versionCode), "apk"));
+    }
+
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/version-code/apk/base1.apk
+    public static File getPluginSourcePath(String packageName, long versionCode) {
+        File dir = enforceDirExists(new File(getPluginDirVersion(packageName, versionCode), "apk"));
+        return new File(dir, "base1.apk");
+    }
+
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/version-code/lib/
+    public static File getPluginLibDir(String packageName, long versionCode) {
+        return enforceDirExists(new File(getPluginDirVersion(packageName, versionCode), "lib"));
+    }
+
+    // 需要加载得插件得基本目录 /data/data/<package>/files/plugin/<package>/version-code/dalvik-cache/
+    public static File getPluginDalvikDir(String packageName, long versionCode) {
+        return enforceDirExists(new File(getPluginDirVersion(packageName, versionCode), "dalvik-cache"));
+    }
+
+    private static File enforceDirExists(File sBaseDir) {
         if (!sBaseDir.exists()) {
             boolean ret = sBaseDir.mkdir();
             if (!ret) {
@@ -95,5 +137,12 @@ public class FileUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void deleteFile(File file) {
+        if (file == null) {
+            return;
+        }
+        file.deleteOnExit();
     }
 }

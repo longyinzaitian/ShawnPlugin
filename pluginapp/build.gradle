@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.shawn.plugin.app"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 31
+        versionCode 100001
+        versionName "1.00.001"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -1,0 +1,12 @@
+[
+  {
+    "pkg": "com.shawn.plugin.app",
+    "isEnable": true,
+    "versionCode": 100001
+  },
+  {
+    "pkg": "com.test.app.demo",
+    "isEnable": false,
+    "versionCode": 100000
+  }
+]
