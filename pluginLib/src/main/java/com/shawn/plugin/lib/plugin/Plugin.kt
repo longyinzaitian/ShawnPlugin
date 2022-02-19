@@ -8,7 +8,6 @@ import androidx.annotation.WorkerThread
 import com.google.gson.annotations.SerializedName
 import com.shawn.plugin.lib.install.PluginInstall
 import com.shawn.plugin.lib.util.FileUtil
-import com.shawn.plugin.lib.util.SpUtil
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.locks.ReentrantLock
@@ -46,11 +45,13 @@ class Plugin() : Parcelable, Serializable {
 
     @Transient
     private val installLock = ReentrantLock()
+
     @Transient
     private val installCondition = installLock.newCondition()
 
     @Transient
     private val initLock = ReentrantLock()
+
     @Transient
     private val initCondition = installLock.newCondition()
 
@@ -73,7 +74,7 @@ class Plugin() : Parcelable, Serializable {
         initLock.unlock()
     }
 
-    private fun checkVersionValid(version: Long) : Boolean {
+    private fun checkVersionValid(version: Long): Boolean {
         if (FileUtil.getPluginSourcePath(pkgName, version).exists()) {
             return true
         }
@@ -115,7 +116,6 @@ class Plugin() : Parcelable, Serializable {
             if (result) {
                 installMaxVersionCode = versionCode
                 FileUtil.deleteFile(file)
-                SpUtil.setPluginInstalled(pkgName, versionCode)
 
                 if (status != Constant.STATUS_ACTIVE) {
                     status = Constant.STATUS_INSTANT_SUC
@@ -147,9 +147,7 @@ class Plugin() : Parcelable, Serializable {
         dirs.forEach {
             val version = it.name.split("-")[1].toLong()
             if (version > maxVersion) {
-                if (SpUtil.getPluginInstalled(pkgName ?: "", version)
-                    && FileUtil.getPluginSourcePath(pkgName ?: "", version).exists()
-                ) {
+                if (FileUtil.getPluginSourcePath(pkgName ?: "", version).exists()) {
                     maxVersion = version
                 }
             }

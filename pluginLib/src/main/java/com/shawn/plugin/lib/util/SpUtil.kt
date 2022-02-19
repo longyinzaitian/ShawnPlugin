@@ -11,13 +11,5 @@ object SpUtil {
         sp = PluginConfig.getHostContext().getSharedPreferences("PluginSp", Context.MODE_PRIVATE)
     }
 
-    fun getPluginInstalled(pkg: String, versionCode: Long): Boolean {
-        return sp.getBoolean(pkg + versionCode, false)
-    }
-
-    fun setPluginInstalled(pkg: String, versionCode: Long) {
-        sp.edit().putBoolean(pkg + versionCode, true).apply()
-    }
-
 
 }
